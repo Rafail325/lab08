@@ -12,9 +12,11 @@ WORKDIR /app
 COPY . .
 
 RUN mkdir -p /logs && \
-    mkdir -p _build && \
-    cmake -S . -B _build -DCMAKE_BUILD_TYPE=Release && \
-    cmake --build _build
+    rm -rf _build && \
+    mkdir _build && \
+    cd _build && \
+    cmake .. -DCMAKE_INCLUDE_PATH=/app/include -DCMAKE_BUILD_TYPE=Release && \
+    cmake --build .
 
 VOLUME /logs
 
