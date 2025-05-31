@@ -1,0 +1,33 @@
+name: Build C++ Project with Docker
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t cpp-builder .
+
+      - name: Run container and build project
+        run: |
+          mkdir -p logs
+          docker run --rm \
+            -v $(pwd):/app \
+            -v $(pwd)/logs:/logs \
+            cpp-builder \
+            sh -c "cd /app && cmake . && make > /logs/build.log 2>&1"
+
+      - name: Upload build log
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: logs/build.log
